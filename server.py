@@ -8,6 +8,7 @@ from tools import TOOLS_DESCRIPTION, execute_action
 load_dotenv()
 
 app = Flask(__name__)
+app.config['JSON_AS_ASCII'] = False
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"

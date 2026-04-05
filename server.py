@@ -63,6 +63,7 @@ def ask_gemini(user_command: str) -> dict:
 def alice_webhook():
     """Принимает запросы от Яндекс Алисы."""
     body = request.json
+    print(f"[ЗАПРОС ПОЛУЧЕН]: {body}")
 
     user_text = body.get("request", {}).get("command", "")
     session = body.get("session", {})

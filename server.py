@@ -95,14 +95,19 @@ def alice_webhook():
         print(f"[Результат]: {execute_result}")
 
     # Отвечаем Алисе
-    return jsonify({
+    from flask import json
+    result = {
         "version": version,
         "session": session,
         "response": {
             "text": response_text,
             "end_session": False
         }
-    })
+    }
+    return app.response_class(
+        response=json.dumps(result, ensure_ascii=False),
+        mimetype='application/json'
+    )
 
 
 @app.route("/", methods=["GET"])

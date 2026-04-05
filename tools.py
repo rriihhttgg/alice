@@ -1,8 +1,6 @@
 import subprocess
 import os
 import webbrowser
-import pyautogui
-import pyperclip
 import time
 
 # Словарь известных приложений (можешь добавлять свои)

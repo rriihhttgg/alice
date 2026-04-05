@@ -11,7 +11,7 @@ app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
+GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-04-17:generateContent?key={GEMINI_API_KEY}"
 
 
 def ask_gemini(user_command: str) -> dict:
@@ -64,7 +64,6 @@ def alice_webhook():
     """Принимает запросы от Яндекс Алисы."""
     body = request.json
 
-    # Получаем текст команды от пользователя
     user_text = body.get("request", {}).get("command", "")
     session = body.get("session", {})
     version = body.get("version", "1.0")
@@ -73,21 +72,25 @@ def alice_webhook():
     print(f"[API KEY]: {GEMINI_API_KEY[:10] if GEMINI_API_KEY else 'НЕТ КЛЮЧА'}")
 
     if not user_text:
-        return jsonify({
+        result = {
             "version": version,
             "session": session,
             "response": {
                 "text": "Привет! Я готов управлять твоим компьютером. Скажи что сделать.",
                 "end_session": False
             }
-        })
+        }
+        return app.response_class(
+            response=json.dumps(result, ensure_ascii=False),
+            mimetype='application/json'
+        )
 
     # Спрашиваем Gemini что делать
-    result = ask_gemini(user_text)
+    gemini_result = ask_gemini(user_text)
 
-    action = result.get("action", "none")
-    params = result.get("params", {})
-    response_text = result.get("response", "Выполнено")
+    action = gemini_result.get("action", "none")
+    params = gemini_result.get("params", {})
+    response_text = gemini_result.get("response", "Выполнено")
 
     print(f"[Действие]: {action} | [Параметры]: {params}")
 
@@ -97,7 +100,6 @@ def alice_webhook():
         print(f"[Результат]: {execute_result}")
 
     # Отвечаем Алисе
-    from flask import json
     result = {
         "version": version,
         "session": session,
@@ -121,7 +123,10 @@ def index():
 def test():
     """Тестовый эндпоинт — проверить что Gemini отвечает."""
     result = ask_gemini("открой браузер")
-    return jsonify(result)
+    return app.response_class(
+        response=json.dumps(result, ensure_ascii=False),
+        mimetype='application/json'
+    )
 
 
 if __name__ == "__main__":

@@ -17,8 +17,11 @@ APPS = {
     "excel": "excel",
     "powerpoint": "powerpnt",
     "discord": r"C:\Users\Алина\AppData\Local\Discord\app-1.0.9231\Discord.exe",
+    "дискорд": r"C:\Users\Алина\AppData\Local\Discord\app-1.0.9231\Discord.exe",
     "telegram": "telegram",
+    "телеграм": "telegram",
     "spotify": "spotify",
+    "спотифай": "spotify",
     "код": "code",
     "vscode": "code",
 }
@@ -27,12 +30,12 @@ APPS = {
 def open_application(app_name: str) -> str:
     """Открывает приложение по названию."""
     app_name_lower = app_name.lower().strip()
-
-    # Ищем в словаре
     exe = APPS.get(app_name_lower, app_name_lower)
-
     try:
-        subprocess.Popen(exe, shell=True)
+        if os.path.isfile(exe):
+            os.startfile(exe)
+        else:
+            subprocess.Popen(exe, shell=True)
         return f"Открываю {app_name}"
     except Exception as e:
         return f"Не удалось открыть {app_name}: {str(e)}"
@@ -40,7 +43,6 @@ def open_application(app_name: str) -> str:
 
 def open_website(url: str) -> str:
     """Открывает сайт в браузере."""
-    # Добавляем https если нет протокола
     if not url.startswith("http"):
         url = "https://" + url
     try:
@@ -53,7 +55,9 @@ def open_website(url: str) -> str:
 def type_text(text: str) -> str:
     """Печатает текст в активном окне."""
     try:
-        time.sleep(0.5)  # Небольшая задержка
+        import pyperclip
+        import pyautogui
+        time.sleep(0.5)
         pyperclip.copy(text)
         pyautogui.hotkey('ctrl', 'v')
         return f"Напечатал текст: {text}"
@@ -78,7 +82,7 @@ def read_file(filepath: str) -> str:
     try:
         with open(filepath, "r", encoding="utf-8") as f:
             content = f.read()
-        return f"Содержимое файла:\n{content[:500]}"  # Первые 500 символов
+        return f"Содержимое файла:\n{content[:500]}"
     except Exception as e:
         return f"Ошибка чтения файла: {str(e)}"
 
@@ -97,8 +101,9 @@ def list_desktop_files() -> str:
 
 
 def press_hotkey(keys: str) -> str:
-    """Нажимает комбинацию клавиш. Пример: 'ctrl+c', 'alt+f4'"""
+    """Нажимает комбинацию клавиш."""
     try:
+        import pyautogui
         key_list = keys.lower().replace(" ", "").split("+")
         pyautogui.hotkey(*key_list)
         return f"Нажал клавиши: {keys}"
@@ -109,6 +114,7 @@ def press_hotkey(keys: str) -> str:
 def take_screenshot() -> str:
     """Делает скриншот экрана."""
     try:
+        import pyautogui
         desktop = os.path.join(os.path.expanduser("~"), "Desktop")
         filepath = os.path.join(desktop, "screenshot.png")
         screenshot = pyautogui.screenshot()
@@ -118,7 +124,7 @@ def take_screenshot() -> str:
         return f"Ошибка скриншота: {str(e)}"
 
 
-# Описание инструментов для Gemini
+# Описание инструментов для Groq
 TOOLS_DESCRIPTION = """
 Ты — голосовой ассистент для управления компьютером. Пользователь говорит команды через Яндекс Алису, а ты их выполняешь.
 
@@ -143,6 +149,7 @@ TOOLS_DESCRIPTION = """
 Примеры:
 Команда: "открой браузер" → {"action": "open_app", "params": {"app": "браузер"}, "response": "Открываю браузер"}
 Команда: "зайди на ютуб" → {"action": "open_site", "params": {"url": "youtube.com"}, "response": "Открываю YouTube"}
+Команда: "открой дискорд" → {"action": "open_app", "params": {"app": "дискорд"}, "response": "Открываю Discord"}
 Команда: "напиши привет мир" → {"action": "type_text", "params": {"text": "привет мир"}, "response": "Печатаю текст"}
 Команда: "сделай скриншот" → {"action": "screenshot", "params": {}, "response": "Делаю скриншот"}
 """

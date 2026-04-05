@@ -70,6 +70,7 @@ def alice_webhook():
     version = body.get("version", "1.0")
 
     print(f"[Команда]: {user_text}")
+    print(f"[API KEY]: {GEMINI_API_KEY[:10] if GEMINI_API_KEY else 'НЕТ КЛЮЧА'}")
 
     if not user_text:
         return jsonify({

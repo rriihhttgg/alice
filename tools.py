@@ -16,7 +16,7 @@ APPS = {
     "word": "winword",
     "excel": "excel",
     "powerpoint": "powerpnt",
-    "discord": "C:\Users\Алина\AppData\Local\Discord\app-1.0.9231\Discord.exe",
+    "discord": r"C:\Users\Алина\AppData\Local\Discord\app-1.0.9231\Discord.exe",
     "telegram": "telegram",
     "spotify": "spotify",
     "код": "code",
